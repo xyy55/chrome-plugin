@@ -25,12 +25,11 @@
       ],
       "exclude_matches": [
         "https://pan.baidu.com/share/init*",
-        "http://pan.baidu.com/share/init*",
-        "https://*.bilibili.com/*",
-        "https://*.csdn.net/*"
+        "http://pan.baidu.com/share/init*"
       ],
       "js": [
         "jquery-3.2.1.min.js",
+        "findAndReplaceDOMText.js",
         "test_link.js"
       ],
       "run_at": "document_end"
