@@ -141,10 +141,6 @@ if (Object.keys(idontknow).length > 0) {
     })
   })
 }
-// let api_urls = []
-// for (var i = 0; i < urls.length; i++) {
-//   let code = /1(.+)/gi.exec(urls[i])[1]
-//   api_urls.push("http://ypsuperkey.meek.com.cn/api/items/BDY-" + code + "?access_key=4fxNbkKKJX2pAm3b8AEu2zT5d2MbqGbD&client_version=web-client")
-// };
+
 
 

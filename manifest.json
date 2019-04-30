@@ -16,7 +16,9 @@
     {
       "matches": [
         "https://pan.baidu.com/share/init*",
-        "http://pan.baidu.com/share/init*"
+        "http://pan.baidu.com/share/init*",
+        "https://pan.baidu.com/wap/init*",
+        "http://pan.baidu.com/wap/init*"
       ],
       "js": [
         "jquery-3.2.1.min.js",
