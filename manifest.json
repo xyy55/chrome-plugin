@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "云盘钥匙",
   "description": "调取别人接口，制作云盘钥匙",
-  "version": "1.0",
+  "version": "1.2",
   "browser_action": {
     "default_title": "请勿用于商业用途，欢迎赞助。",
     "default_popup": "hello.html"
