@@ -1,5 +1,7 @@
 (function () {
   window.onload = function () {
+    // 删除在 APP 打开
+    removeItem(document.querySelector('.OpenInAppButton'))
     // 判断必须是在知乎问题页面
     if (!document.URL.includes('www.zhihu.com/question')) {
       return
@@ -24,8 +26,7 @@
     // 删除推荐
     removeItem(document.querySelector('.Card.RelatedReadings'))
     removeItem(document.querySelector('.Card.HotQuestions'))
-    // 删除在 APP 打开
-    removeItem(document.querySelector('.OpenInAppButton.OpenInApp.is-shown'))
+
   }
 
   function removeItem (item) {
