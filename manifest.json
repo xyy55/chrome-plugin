@@ -15,6 +15,15 @@
   "content_scripts": [
     {
       "matches": [
+        "https://www.zhihu.com/question/*"
+      ],
+      "js": [
+        "zhihu.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
         "https://pan.baidu.com/share/init*",
         "http://pan.baidu.com/share/init*",
         "https://pan.baidu.com/wap/init*",
