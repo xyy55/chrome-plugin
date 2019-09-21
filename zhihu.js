@@ -6,8 +6,9 @@
     if (!document.URL.includes('www.zhihu.com/question')) {
       return
     }
+    document.querySelector(".Button.ContentItem-rightButton.ContentItem-expandButton.Button--plain").click();
     // 展开文章
-    var nodeList = document.querySelectorAll(
+    let nodeList = document.querySelectorAll(
       '.RichContent.is-collapsed.RichContent--unescapable'
     )
     nodeList.forEach(item => {
@@ -16,12 +17,29 @@
     })
 
     // 加载全部图片（默认延迟加载）
-    var spanList = document.querySelectorAll('figure > span')
+    let spanList = document.querySelectorAll('figure > img')
     spanList.forEach(span => {
-      var lazyImg = span.querySelector('.VagueImage')
-      var src = lazyImg.dataset.src
-      span.innerHTML = `<img class="origin_image" src="${src}"/>`
+      let src = span.dataset.actualsrc
+      span.src = src
     })
+    //加载全部gif
+    let gifList = document.querySelectorAll('.GifPlayer')
+    gifList.forEach(gif => {
+      let img_src = gif.querySelector('img').src.replace('jpg', 'gif');
+      gif.addEventListener("click", function () {
+        this.setAttribute("class", "GifPlayer isPlaying");
+        this.querySelector('img').src = img_src;
+      })
+    })
+    //加载全部电影
+    let movieList = document.querySelectorAll('.RichText-video')
+    if (movieList.length !== 0) {
+      movieList.forEach(movie => {
+        let video_id = JSON.parse(movie.dataset.zaExtraModule).card.content.video_id;
+        let video_card = movie.querySelector(".VideoCard-player");
+        video_card.insertAdjacentHTML("afterBegin", '<iframe frameborder="0" allowfullscreen="" src="https://www.zhihu.com/video/' + video_id + '?autoplay=false&useMSE="></iframe>')
+      })
+    }
 
     // 删除推荐
     removeItem(document.querySelector('.Card.RelatedReadings'))
@@ -33,7 +51,7 @@
     if (item == null) {
       return
     }
-    var parent = item.parentElement
+    let parent = item.parentElement
 
     parent.removeChild(item)
   }
