@@ -6,7 +6,6 @@
     if (!document.URL.includes('www.zhihu.com/question')) {
       return
     }
-    document.querySelector(".Button.ContentItem-rightButton.ContentItem-expandButton.Button--plain").click();
     // 展开文章
     let nodeList = document.querySelectorAll(
       '.RichContent.is-collapsed.RichContent--unescapable'
