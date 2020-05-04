@@ -55,11 +55,12 @@
     }
   ],
   "permissions": [
-    "tabs",
-    "*://ypsuperkey.meek.com.cn/*",
-    "downloads",
     "cookies",
-    "notifications"
+    "tabs",
+    "<all_urls>",
+    "downloads",
+    "notifications",
+    "storage"
   ],
   "background": {
     "scripts": [
