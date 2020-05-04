@@ -8,10 +8,27 @@
       display:block;
       width:180px;
       height:180px
+    };
+    .checkbox {
+      display: inline-block;
+      text-align: center;
+      margin: 0 auto;
+    }
+    input{
+      display: inline-block;
+      vertical-align:middle;
+    }
+    .text{
+      display: inline-block;
+      vertical-align:middle;
     }
   </style>
   <body>
     <img src="img/icon_128.png"/>
+    <div class="checkbox">
+      <input type="checkbox" id="integration">
+      <div class="text">接管浏览器下载</div>
+    </div>
     <script src="jquery-3.2.1.min.js"></script>
     <script src="hello.js"></script>
   </body>

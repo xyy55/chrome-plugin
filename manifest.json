@@ -15,15 +15,6 @@
   "content_scripts": [
     {
       "matches": [
-        "https://pan.baidu.com/s/1*"
-      ],
-      "js": [
-        "to_pd.js"
-      ],
-      "run_at": "document_end"
-    },
-    {
-      "matches": [
         "https://www.zhihu.com/question/*",
         "https://zhuanlan.zhihu.com/p/*"
       ],
@@ -65,7 +56,10 @@
   ],
   "permissions": [
     "tabs",
-    "*://ypsuperkey.meek.com.cn/*"
+    "*://ypsuperkey.meek.com.cn/*",
+    "downloads",
+    "cookies",
+    "notifications"
   ],
   "background": {
     "scripts": [
