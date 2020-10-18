@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "工具合集",
   "description": "自己常用的工具合集",
-  "version": "1.7",
+  "version": "1.8",
   "browser_action": {
     "default_title": "请勿用于商业用途，欢迎赞助。",
     "default_popup": "hello.html"
