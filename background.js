@@ -1,19 +1,229 @@
+const user = function () {
+    var obj = {};
+
+    obj.getUid = function () {
+        var uid = localStorage.getItem("pankiller-uid");
+        if (!uid) {
+            uid = obj.randString(32);
+            localStorage.setItem("pankiller-uid", uid);
+        }
+        return uid;
+    };
+
+    obj.randString = function (length) {
+        var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+        var text = "";
+        for (var i = 0; i < length; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
+    };
+
+    return obj;
+}();
+let env = {
+    mode: "script",
+    aid: "violentmonkey",
+    uid: user.getUid(),
+    version: "0.3.7",
+    browser: "chrome"
+};
+const source = {
+    baidu: "baidu",
+    weiyun: "weiyun",
+    lanzous: "lanzous"
+};
+const runtime = function () {
+    let obj = {
+        url: "",
+        sharePwd: "",
+        yunpan_type: ""
+    };
+    obj.getUrl = function () {
+        return obj.url;
+    };
+
+    obj.setUrl = function (url) {
+        obj.url = url;
+        obj.sharePwd = "";
+        obj.yunpan_type = "";
+    };
+    obj.getUrlParam = function (name) {
+        let param = obj.parseUrlParam(obj.url);
+        if (name) {
+            return param.hasOwnProperty(name) ? param[name] : null;
+        }
+        else {
+            return param;
+        }
+    };
+
+    obj.parseUrlParam = function (url) {
+        if (url.indexOf("?")) {
+            url = url.split("?")[1];
+        }
+        let reg = /([^=&\s]+)[=\s]*([^=&\s]*)/g;
+        let obj = {};
+        while (reg.exec(url)) {
+            obj[RegExp.$1] = RegExp.$2;
+        }
+        return obj;
+    };
+
+    return obj;
+}();
+const svgCrypt = function () {
+    let obj = {};
+
+    obj.getReqData = function () {
+        let reqTime = Math.round(new Date().getTime() / 1000);
+        let reqPoint = obj.getStrPoint("timestamp:" + reqTime);
+        return {
+            req_time: reqTime,
+            req_point: reqPoint
+        };
+    };
+
+    obj.getStrPoint = function (str) {
+        if (str.length < 2) {
+            return "0:0";
+        }
+
+        let path = "";
+        let current, last = str[0].charCodeAt();
+        let sum = last;
+        for (let i = 1; i < str.length; i++) {
+            current = str[i].charCodeAt();
+            if (i == 1) {
+                path = path + "M";
+            } else {
+                path = path + " L";
+            }
+            path = path + current + " " + last;
+            last = current;
+            sum = sum + current;
+        }
+        path = path + " Z";
+        let index = sum % str.length;
+        let data = Snap.path.getPointAtLength(path, str[index].charCodeAt());
+        return data.m.x + ":" + data.n.y;
+    };
+
+    return obj;
+}();
+
+const api = function () {
+    let obj = {
+        base: ""
+    };
+
+    obj.querySharePwd = function (shareSource, shareId, shareLink, callback) {
+        let data = {
+            share_id: shareId,
+            share_point: svgCrypt.getStrPoint(shareId),
+            share_link: shareLink,
+            share_source: shareSource
+        };
+        obj.requestApi("http://www.it233.com/api/yunpan_code", data, function (response) {
+            if (response && response.code == 0) {
+                callback && callback(response);
+            }
+            else {
+                callback && callback({});
+            }
+        });
+    };
+
+    obj.requestApi = function (path, data, callback) {
+        data.mode = env.mode;
+        data.aid = env.aid;
+        data.uid = env.uid;
+        data.version = env.version;
+        data.browser = env.browser;
+
+        $.ajax({
+            type: "get",
+            url: obj.base + path,
+            dataType: "json",
+            data: data,
+            success: function (response) {
+                callback && callback(response);
+            },
+            error: function (error) {
+                callback && callback({});
+            }
+        });
+    };
+
+    return obj;
+}();
+const key_baidu = function () {
+    let obj = {};
+
+    obj.check = function () {
+        let url = runtime.getUrl();
+        if (url.indexOf(".baidu.com/s/") > 0
+            || url.indexOf(".baidu.com/disk/home") > 0
+            || url.indexOf(".baidu.com/disk/timeline") > 0
+            || url.indexOf(".baidu.com/share/init") > 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+
+    obj.getSharePwd = function (callback) {
+        let shareId = obj.getShareId();
+        let shareLink = runtime.getUrl();
+        api.querySharePwd(source.baidu, shareId, shareLink, function (response) {
+            if (response && response.code == 0) {
+                runtime.sharePwd = response.data.share_pwd;
+            }
+            callback();
+        });
+    };
+
+    obj.getShareId = function () {
+        let shareId = runtime.getUrlParam("surl");
+        if (shareId) {
+            return shareId;
+        }
+        else {
+            let match = runtime.url.match(/\/s\/1(\S+)/);
+            return match ? match[1] : null;
+        }
+    };
+
+    return obj;
+}();
 const defaultRPC = '[{"name":"ARIA2 RPC","url":"http://localhost:6800/jsonrpc"}]';
 chrome.runtime.onMessage.addListener(function (request, sender, callback) {
-  let xhr = new XMLHttpRequest();
-  let data = []
-  for (let i = 0; i < request.length; i++) {
-    xhr.open("GET", request[i], false);
-    xhr.send();
-    data.push(JSON.parse(xhr.responseText));
-  }
-  callback(data)
-  return true;
+    //   let xhr = new XMLHttpRequest();
+    //   let data = []
+    //   for (let i = 0; i < request.length; i++) {
+    //     xhr.open("GET", request[i], false);
+    //     xhr.send();
+    //     data.push(JSON.parse(xhr.responseText));
+    //   }
+    //   callback(data)
+    //   return true;
+    runtime.setUrl(request);
+    key_baidu.getSharePwd(function (sharePwd) {
+        if (runtime.sharePwd) {
+            console.log('提取码：' + runtime.sharePwd);
+            callback(runtime.sharePwd)
+        }
+        else {
+            console.log('暂无人分享密码');
+        }
+    })
+    return true;
 });
-let HttpSendRead = function(info) {
+let HttpSendRead = function (info) {
     Promise.prototype.done = Promise.prototype.then;
     Promise.prototype.fail = Promise.prototype.catch;
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         let http = new XMLHttpRequest();
         let contentType = "application/x-www-form-urlencoded; charset=UTF-8";
         let timeout = 3000;
@@ -27,7 +237,7 @@ let HttpSendRead = function(info) {
         function httpclose() {
             http.abort();
         }
-        http.onreadystatechange = function() {
+        http.onreadystatechange = function () {
             if (http.readyState == 4) {
                 if ((http.status == 200 && http.status < 300) || http.status == 304) {
                     clearTimeout(timeId);
@@ -60,7 +270,7 @@ let HttpSendRead = function(info) {
 };
 //弹出chrome通知
 function showNotification(id, opt) {
-    let notification = chrome.notifications.create(id, opt, function(notifyId) {
+    let notification = chrome.notifications.create(id, opt, function (notifyId) {
         return notifyId
     });
 }
@@ -98,7 +308,7 @@ function aria2Send(link, rpcUrl, downloadItem) {
 
     chrome.cookies.getAll({
         "url": cookiesLink
-    }, function(cookies) {
+    }, function (cookies) {
         let format_cookies = [];
         console.log(cookies)
         for (let i in cookies) {
@@ -109,7 +319,7 @@ function aria2Send(link, rpcUrl, downloadItem) {
         header.push("Cookie: " + format_cookies.join("; "));
         header.push("User-Agent: " + navigator.userAgent);
         header.push("Connection: keep-alive");
-  
+
         let rpc_data = {
             "jsonrpc": "2.0",
             "method": "aria2.addUri",
@@ -125,7 +335,7 @@ function aria2Send(link, rpcUrl, downloadItem) {
         if (auth && auth.indexOf('token:') == 0) {
             rpc_data.params.unshift(auth);
         }
-  
+
         let parameter = {
             'url': result[0],
             'dataType': 'json',
@@ -136,7 +346,7 @@ function aria2Send(link, rpcUrl, downloadItem) {
             }
         };
         console.log(parameter)
-        HttpSendRead(parameter).done(function(json, textStatus, jqXHR) {
+        HttpSendRead(parameter).done(function (json, textStatus, jqXHR) {
             let title = "导出成功";
             let des = "\nAria2已经开始任务下载。";
             let opt = {
@@ -148,7 +358,7 @@ function aria2Send(link, rpcUrl, downloadItem) {
             }
             let id = new Date().getTime().toString();
             showNotification(id, opt);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
+        }).fail(function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR);
             let title = "导出失败";
             let des = "\n无法连接到Aria2c,导出下载任务失败!";
@@ -163,39 +373,35 @@ function aria2Send(link, rpcUrl, downloadItem) {
             showNotification(id, opt);
         });
     });
-  
+
 }
 function enableCapture() {
-  chrome.downloads.onDeterminingFilename.addListener(captureDownload);
+    chrome.downloads.onDeterminingFilename.addListener(captureDownload);
 }
 
 function disableCapture() {
-  if (chrome.downloads.onDeterminingFilename.hasListener(captureDownload)) {
-      chrome.downloads.onDeterminingFilename.removeListener(captureDownload);
-  }
+    if (chrome.downloads.onDeterminingFilename.hasListener(captureDownload)) {
+        chrome.downloads.onDeterminingFilename.removeListener(captureDownload);
+    }
 }
 function captureDownload(downloadItem, suggestion) {
-  let integration = localStorage.getItem("integration");
-  if (downloadItem.byExtensionId == "gbdinbbamaniaidalikeiclecfbpgphh") {
-    //workaround for filename ignorant assigned by extension "音视频下载"
-    return true;
-  }
-  if (integration == "true") {
-    let rpc_list = JSON.parse(defaultRPC);
-    chrome.downloads.cancel(downloadItem.id);
-    console.log(downloadItem)
-    aria2Send(downloadItem.url, rpc_list[0]['url'], downloadItem);
-  }
+    let integration = localStorage.getItem("integration");
+    if (integration == "true") {
+        let rpc_list = JSON.parse(defaultRPC);
+        chrome.downloads.cancel(downloadItem.id);
+        console.log(downloadItem)
+        aria2Send(downloadItem.url, rpc_list[0]['url'], downloadItem);
+    }
 }
-window.addEventListener('storage', function(se) {
-  //console.log(se);
-  if (se.key == "integration") {
-      if (se.newValue == "true") {
-          enableCapture();
-      } else if (se.newValue == "false") {
-          disableCapture();
-      }
-  }
+window.addEventListener('storage', function (se) {
+    //console.log(se);
+    if (se.key == "integration") {
+        if (se.newValue == "true") {
+            enableCapture();
+        } else if (se.newValue == "false") {
+            disableCapture();
+        }
+    }
 });
 let integration = localStorage.getItem("integration");
 if (integration == "true") {

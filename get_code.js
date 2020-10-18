@@ -1,10 +1,11 @@
 let htmlHref = window.location.href;
-let share_code = /.+surl=([a-zA-Z0-9_\-]+)&?/gi.exec(htmlHref)
-let url = ['https://ypsuperkey.meek.com.cn/api/v1/items/BDY-' + share_code[1] + '?client_version=2018.12&callback=?']
-var code = '';
-chrome.runtime.sendMessage(url, function (response) {                  //将抓取到的标题发送给background.js后台处理
-  code = response[0].access_code;
+let url = htmlHref
+// let share_code = /.+surl=([a-zA-Z0-9_\-]+)&?/gi.exec(htmlHref)
+// let url = ['https://ypsuperkey.meek.com.cn/api/v1/items/BDY-' + share_code[1] + '?client_version=2018.12&callback=?']
 
+let code = '';
+chrome.runtime.sendMessage(url, function (response) {                  //将抓取到的标题发送给background.js后台处理
+  code = response;
 });
 $(document).ready(function () {
   if (htmlHref.indexOf("wap") === -1) {

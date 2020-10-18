@@ -64,6 +64,8 @@
   ],
   "background": {
     "scripts": [
+      "jquery-3.2.1.min.js",
+      "snap.svg-min.js",
       "background.js"
     ],
     "persistent": false
